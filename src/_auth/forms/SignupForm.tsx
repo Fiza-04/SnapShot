@@ -1,8 +1,7 @@
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { Link, useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -11,22 +10,21 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { SignupValidation } from "@/lib/validation";
+import { Button } from "@/components/ui/button";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 import {
   useSignInAccount,
-  usecreateUserAccount,
+  useCreateUserAccount,
 } from "@/lib/react-query/queryAndMutation";
+import { Input } from "@/components/ui/input";
+import { SignupValidation } from "@/lib/validation";
+import { useUserContext } from "@/context/AuthContext";
 
 const SignupForm = () => {
   const { toast } = useToast();
-  const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } =
-    usecreateUserAccount();
-
-  const { mutateAsync: signInAccount, isLoading: isSigningIn } =
-    useSignInAccount();
+  const navigate = useNavigate();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -36,36 +34,59 @@ const SignupForm = () => {
       username: "",
       email: "",
       password: "",
-      confirm_password: "",
     },
   });
 
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
+    useCreateUserAccount();
+  const { mutateAsync: signInAccount, isPending: isSigningIn } =
+    useSignInAccount();
+
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof SignupValidation>) {
-    console.log(values);
-    const newUser = await createUserAccount(values);
+  async function onSubmit(user: z.infer<typeof SignupValidation>) {
+    try {
+      const newUser = await createUserAccount(user);
 
-    if (!newUser) {
-      return toast({
-        title: "Sign Up failed. Please Try Again!",
+      if (!newUser) {
+        return toast({
+          title: "Sign Up failed. Please Try Again!",
+        });
+      }
+
+      const session = await signInAccount({
+        email: user.email,
+        password: user.password,
       });
-    }
 
-    const session = await signInAccount({
-      email: values.email,
-      password: values.password,
-    });
+      if (!session) {
+        toast({
+          title: "Something went wrong. Please login to your new account!",
+        });
+        // navigate("/sign-in");
 
-    if (!session) {
-      return toast({ title: "Sign In failed. Please Try Again!" });
+        // return;
+      }
+
+      const isLoggedIn = await checkAuthUser();
+
+      if (isLoggedIn) {
+        form.reset();
+
+        navigate("/");
+      } else {
+        toast({ title: "Sign Up failed. Please try again!" });
+        return;
+      }
+    } catch (error) {
+      console.log({ error });
     }
   }
 
   return (
     <Form {...form}>
-      <div className="flex flex-col items-center justify-center sm:420">
+      <div className="flex flex-col items-center justify-center sm:w-420">
         <img
-          src="../../../public/assets/images/logo_main(2).png"
+          src="/assets/images/logo_main(2).png"
           alt="logo"
           className="w-40 mb-3"
         />
@@ -135,22 +156,22 @@ const SignupForm = () => {
               </FormItem>
             )}
           />
-          <div className=" md:flex md:space-x-3">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-white">Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" className="shad-input" {...field} />
-                  </FormControl>
+          {/* <div className=" md:flex md:space-x-3"> */}
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white">Password</FormLabel>
+                <FormControl>
+                  <Input type="password" className="shad-input" {...field} />
+                </FormControl>
 
-                  <FormMessage className="shad-error" />
-                </FormItem>
-              )}
-            />
-            <FormField
+                <FormMessage className="shad-error" />
+              </FormItem>
+            )}
+          />
+          {/* <FormField
               control={form.control}
               name="confirm_password"
               render={({ field }) => (
@@ -162,8 +183,8 @@ const SignupForm = () => {
                   <FormMessage className="shad-error" />
                 </FormItem>
               )}
-            />
-          </div>
+            /> */}
+          {/* </div> */}
           <Button type="submit" className="shad-button">
             {isCreatingAccount ? (
               <div className="flex">

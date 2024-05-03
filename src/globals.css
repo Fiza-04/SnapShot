@@ -64,9 +64,6 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
@@ -85,10 +82,20 @@ body {
   }
 
   .shad-button {
-    @apply w-full bg-indigo-900 flex gap-2 mt-10 !important;
+    @apply w-full bg-indigo-800 hover:bg-indigo-600 flex gap-2 mt-10 !important;
   }
 
   .shad-error {
     @apply text-xs absolute !important;
+  }
+
+  .shad-button_ghost {
+    @apply flex gap-4 items-end justify-items-end hover:bg-gray_1 hover:text-white !important;
+  }
+}
+
+@layer utilities {
+  .topbar {
+    @apply sticky top-0 z-50 md:hidden w-full bg-topbardark !important;
   }
 }

@@ -1,4 +1,4 @@
-import { ID, Query } from "appwrite";
+import { ID, Query, Permission, Role } from "appwrite";
 import { INewUser } from "@/types";
 import { account, appwriteConfig, avatars, databases } from "./config";
 
@@ -13,7 +13,7 @@ export async function createUserAccount(user: INewUser) {
 
     if (!newAccount) throw Error;
 
-    const avatarURL = avatars.getInitials(user.name);
+    const avatarURL = avatars.getInitials(user.name).toString();
 
     const newUser = await saveUserToDB({
       accountId: newAccount.$id,
@@ -34,7 +34,7 @@ export async function saveUserToDB(user: {
   accountId: string;
   email: string;
   name: string;
-  imageUrl: URL;
+  imageUrl: string;
   username: string;
 }) {
   try {
@@ -42,7 +42,8 @@ export async function saveUserToDB(user: {
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       ID.unique(),
-      user
+      user,
+      [Permission.read(Role.any())]
     );
 
     return newUser;
@@ -60,7 +61,8 @@ export async function signInAccount(user: { email: string; password: string }) {
 
     return session;
   } catch (error) {
-    console.log(error);
+    console.error("Error creating session:", error);
+    throw error;
   }
 }
 
@@ -79,6 +81,17 @@ export async function getCurrentUser() {
     if (!currentUser) throw Error;
 
     return currentUser.documents[0];
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+export async function signOutAccount() {
+  try {
+    const session = await account.deleteSession("current");
+
+    return session;
   } catch (error) {
     console.log(error);
   }

@@ -1,7 +1,7 @@
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -10,12 +10,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import Loader from "@/components/shared/Loader";
+import { useToast } from "@/components/ui/use-toast";
+import { useSignInAccount } from "@/lib/react-query/queryAndMutation";
 import { Input } from "@/components/ui/input";
 import { SigninValidation } from "@/lib/validation";
-import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
+import { useUserContext } from "@/context/AuthContext";
 
 const SigninForm = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof SigninValidation>>({
     resolver: zodResolver(SigninValidation),
@@ -25,25 +32,53 @@ const SigninForm = () => {
     },
   });
 
+  const { mutateAsync: signInAccount } = useSignInAccount();
+
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof SigninValidation>) {
-    console.log(values);
-    // const existingUser = await getUserAccount(values);
+  async function onSubmit(user: z.infer<typeof SigninValidation>) {
+    try {
+      console.log("were in");
+      const session = await signInAccount({
+        email: user.email,
+        password: user.password,
+      });
+
+      console.log("session", session);
+      if (!session) {
+        return toast({
+          title: "Sign in Failed. Please Try Again!",
+        });
+      }
+
+      const isLoggedIn = await checkAuthUser();
+      console.log({ isLoggedIn });
+
+      if (isLoggedIn) {
+        form.reset();
+
+        console.log("Navigating");
+        navigate("/");
+      } else {
+        toast({ title: "Sign In failed. Please try again!" });
+        return;
+      }
+    } catch (error) {
+      console.log({ error });
+    }
   }
 
-  const isLoading = true;
   return (
     <Form {...form}>
-      <div className="flex flex-col items-center justify-center sm:420">
+      <div className="flex flex-col items-center justify-center sm:w-420">
         <img
-          src="../../../public/assets/images/logo_main(2).png"
+          src="/assets/images/logo_main(2).png"
           alt="logo"
           className="w-40 mb-3"
         />
 
-        <h2 className="text-white">Sign IN to your account</h2>
+        <h2 className="text-white">Login In to your Account</h2>
         <p className="text-gray-400 font-light small-medium md:base-regular">
-          To Login to Snapshot, Please enter your details below
+          Welcome back! Please enter your details.
         </p>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -77,21 +112,19 @@ const SigninForm = () => {
               </FormItem>
             )}
           />
-
           <Button type="submit" className="shad-button">
-            {isLoading ? (
+            {isUserLoading ? (
               <div className="flex">
                 <Loader />
                 Loading...
               </div>
             ) : (
-              "Sign IN"
+              "Sign In"
             )}
           </Button>
           <p className="text-white font-extralight text-center">
-            New to SnapShot?
-            <Link to="/sign-up" className="text-indigo-400 font-normal">
-              {" "}
+            Don't have an account?
+            <Link to="/sign-up" className="text-indigo-400 font-normal pl-1">
               Sign Up
             </Link>
           </p>

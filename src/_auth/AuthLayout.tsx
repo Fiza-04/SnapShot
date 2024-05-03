@@ -1,7 +1,8 @@
 import { Outlet, Navigate } from "react-router-dom";
+import { useUserContext } from "@/context/AuthContext";
 
-const AuthLayout = () => {
-  const isAuthenticated = false;
+export default function AuthLayout() {
+  const { isAuthenticated } = useUserContext();
 
   return (
     <>
@@ -14,7 +15,7 @@ const AuthLayout = () => {
           </section>
 
           <img
-            src="../../public/assets/images/bgimage.png"
+            src="/assets/images/bgimage.png"
             alt="logo"
             className="hidden xl:block w:1 h-screen object-cover bg-no-repeat"
           />
@@ -22,6 +23,4 @@ const AuthLayout = () => {
       )}
     </>
   );
-};
-
-export default AuthLayout;
+}

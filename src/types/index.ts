@@ -1,4 +1,8 @@
-import React from "react";
+export type INavLinks = {
+  imageUrl: string;
+  route: string;
+  label: string;
+};
 
 export type INewUser = {
   // firstName: string;

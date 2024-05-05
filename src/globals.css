@@ -77,6 +77,34 @@ body {
 }
 
 @layer components {
+  .body-bold {
+    @apply text-[18px] leading-[140%] text-white;
+  }
+
+  .flex-center {
+    @apply flex justify-center items-center;
+  }
+
+  .flex-between {
+    @apply flex justify-between items-center;
+  }
+
+  .flex-start {
+    @apply flex justify-start items-center;
+  }
+
+  .tiny-medium {
+    @apply text-[10px] font-medium leading-[140%];
+  }
+
+  .small-medium {
+    @apply text-[16px] font-normal leading-[140%] text-white;
+  }
+
+  .small-regular {
+    @apply text-[14px] font-normal leading-[140%];
+  }
+
   .shad-input {
     @apply h-10 bg-gray-800 border-none text-white focus-visible:ring-0 focus-visible:ring-offset-0 ring-offset-0 !important;
   }
@@ -90,12 +118,32 @@ body {
   }
 
   .shad-button_ghost {
-    @apply flex gap-4 items-end justify-items-end hover:bg-gray_1 hover:text-white !important;
+    @apply flex gap-4 items-center justify-start hover:bg-zinc-900 hover:text-white !important;
   }
 }
 
 @layer utilities {
+  .invert-white {
+    @apply invert brightness-0 transition;
+  }
+
+  .base-medium {
+    @apply text-[16px] font-normal leading-[140%];
+  }
+
   .topbar {
-    @apply sticky top-0 z-50 md:hidden w-full bg-topbardark !important;
+    @apply sticky top-0 z-50 md:hidden w-full bg-zinc-950 !important;
+  }
+
+  .leftsidebar {
+    @apply hidden md:flex px-6 py-10 flex-col justify-between min-w-[270px] bg-zinc-950;
+  }
+
+  .leftsidebar-link {
+    @apply rounded-lg base-medium text-white hover:bg-zinc-900 transition;
+  }
+
+  .bottom-bar {
+    @apply z-50 flex-between w-full sticky bottom-0 bg-dark_2 px-8 md:hidden;
   }
 }

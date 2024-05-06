@@ -14,3 +14,10 @@ export const SigninValidation = z.object({
   email: z.string().email({ message: "Incorrect email" }),
   password: z.string().min(8, { message: "Incorrect Password" }),
 });
+
+export const PostValidation = z.object({
+  caption: z.string({ message: "Add a Caption" }).max(2200),
+  file: z.custom<File[]>(),
+  location: z.string({ message: "Add a location" }).min(2).max(100),
+  tags: z.string({ message: "Add some tags" }),
+});

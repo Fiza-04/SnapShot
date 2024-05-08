@@ -45,14 +45,14 @@ export type IUpdateUser = {
   bio: string;
   imageId: string;
   imageUrl: URL | string;
-  file: File[];
+  file?: File[];
 };
 
 export type IUpdatePost = {
   postId: string;
   caption: string;
   imageId: string;
-  imageUrl: URL;
+  imageUrl: URL | string;
   file: File[];
   location?: string;
   tags?: string;

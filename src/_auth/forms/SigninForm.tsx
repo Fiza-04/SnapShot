@@ -37,13 +37,11 @@ const SigninForm = () => {
   // 2. Define a submit handler.
   async function onSubmit(user: z.infer<typeof SigninValidation>) {
     try {
-      console.log("were in");
       const session = await signInAccount({
         email: user.email,
         password: user.password,
       });
 
-      console.log("session", session);
       if (!session) {
         return toast({
           title: "Sign in Failed. Please Try Again!",
@@ -51,12 +49,10 @@ const SigninForm = () => {
       }
 
       const isLoggedIn = await checkAuthUser();
-      console.log({ isLoggedIn });
 
       if (isLoggedIn) {
         form.reset();
 
-        console.log("Navigating");
         navigate("/");
       } else {
         toast({ title: "Sign In failed. Please try again!" });
@@ -112,7 +108,7 @@ const SigninForm = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="shad-button">
+          <Button type="submit" className="shad-button text-white font-normal">
             {isUserLoading ? (
               <div className="flex">
                 <Loader />
@@ -124,7 +120,7 @@ const SigninForm = () => {
           </Button>
           <p className="text-white font-extralight text-center">
             Don't have an account?
-            <Link to="/sign-up" className="text-indigo-400 font-normal pl-1">
+            <Link to="/sign-up" className="text-violet-400 font-normal pl-1">
               Sign Up
             </Link>
           </p>

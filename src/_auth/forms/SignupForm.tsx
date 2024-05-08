@@ -185,7 +185,7 @@ const SignupForm = () => {
               )}
             /> */}
           {/* </div> */}
-          <Button type="submit" className="shad-button">
+          <Button type="submit" className="shad-button text-white font-normal">
             {isCreatingAccount ? (
               <div className="flex">
                 <Loader />
@@ -197,7 +197,7 @@ const SignupForm = () => {
           </Button>
           <p className="text-white font-extralight text-center">
             Already have an account?
-            <Link to="/sign-in" className="text-indigo-400 font-normal pl-1">
+            <Link to="/sign-in" className="text-violet-400 font-normal pl-1">
               Login
             </Link>
           </p>

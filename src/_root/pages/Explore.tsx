@@ -2,22 +2,33 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import SearchResults from "@/components/shared/SearchResults";
 import GridPostList from "@/components/shared/GridPostList";
-import { useGetPosts, useSearchPost } from "@/lib/react-query/queryAndMutation";
+import { useGetUsers, useSearchPost } from "@/lib/react-query/queryAndMutation";
 import useDebounce from "@/hooks/useDebounce";
 import Loader from "@/components/shared/Loader";
 import { useInView } from "react-intersection-observer";
 
 const Explore = () => {
   const { ref, inView } = useInView();
-  const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
+  const { data: posts, fetchNextPage, hasNextPage } = useGetUsers();
+
+  console.log("Explore useGetUsers =>", useGetUsers());
+
+  console.log("Explore posts =>", posts);
   const [searchValue, setSearchValue] = useState("");
   const debouncedValue = useDebounce(searchValue, 500);
   const { data: searchedPosts, isFetching: isSearchFetching } =
     useSearchPost(debouncedValue);
 
+  const shouldShowSearchResults = searchValue !== "";
+  const shouldShowPosts =
+    !shouldShowSearchResults &&
+    posts.pages.every((item) => item.documents.length === 0);
+
+  console.log("Explore pages =>", posts.pages);
+
   useEffect(() => {
-    if (inView && searchValue) fetchNextPage();
-  }, [inView, searchValue]);
+    if (inView && shouldShowSearchResults) fetchNextPage();
+  }, [inView, shouldShowSearchResults, hasNextPage]);
 
   if (!posts) {
     return (
@@ -26,11 +37,6 @@ const Explore = () => {
       </div>
     );
   }
-
-  const shouldShowSearchResults = searchValue !== "";
-  const shouldShowPosts =
-    !shouldShowSearchResults &&
-    posts.pages.every((item) => item.documents.length === 0);
 
   return (
     <div className="explore-container">

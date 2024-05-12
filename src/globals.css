@@ -110,8 +110,12 @@ body {
     @apply flex justify-start items-center;
   }
 
+  .creator-profile-containers {
+    @apply grid grid-rows-2;
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
-    width: 3px;
+    width: 0;
     height: 3px;
     border-radius: 2px;
   }
@@ -145,6 +149,18 @@ body {
     @apply base-medium text-white hover:bg-zinc-900 rounded-[10px] transition;
   }
 
+  .right-side-container {
+    @apply lg:w-[30%] bg-zinc-950  overflow-y-scroll;
+  }
+
+  .profile-card {
+    @apply bg-zinc-950 rounded-[20px] border border-zinc-800  w-[40%] h-44 ml-5 flex items-center justify-center;
+  }
+
+  .profile-card_img {
+    @apply h-64  lg:h-[450px] w-full rounded-[24px] object-cover mb-5;
+  }
+
   .bottom-bar {
     @apply z-50 flex-between w-full sticky bottom-0 bg-dark_2 px-8 md:hidden;
   }
@@ -165,7 +181,7 @@ body {
 
   /* Home */
   .home-container {
-    @apply flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar;
+    @apply flex flex-col flex-1 items-center gap-10 overflow-y-scroll custom-scrollbar py-10 px-5 md:px-8 lg:p-14 custom-scrollbar;
   }
 
   .home-posts {
